@@ -1,0 +1,95 @@
+local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+local Player = Players.LocalPlayer
+local Mouse = Player:GetMouse()
+local X, Y = 0, 0
+local LastC = Color3.new(1, 0, 0)
+local LastU = tick()
+
+local syn = {}
+
+local Enabled_AutoClicker = false
+
+if not pcall(function() return syn.AutoClickGui end) then
+    syn = {}
+    syn.AutoClickGui = function(AutoClickerGui)
+        AutoClickerGui.Parent = CoreGui
+    end
+end
+
+local Pastebin = 'https://pastebin.com/raw/yvaPcWMK'
+local Library = loadstring(game:HttpGetAsyn(Pastebin)()
+local Window = Library:CreateWindow("AutoClicker by SubToMrAndi")
+
+EnabledAutoClicker = Window:AddColor({
+    text = 'Status:',
+    flag = "Ezpi_1",
+    color = Color3.new(1, 0, 0),
+    callback = function(AutoClickerGui)
+        -- "Enabled_AutoClicker" Color
+        local NewColor = Color3.new(0, 1, 0)
+        if Enabled_AutoClicker == false then
+            NewColor = Color3.new(1, 0, 0)
+        end
+        if NewColor ~= Last or AutoClickerGui ~= NewColor then
+            Last = NewColor
+            EnabledAutoClicker:SetColor(NewColor)
+        end
+    end
+})
+
+Window:AddBind({
+    text = 'Toggle',
+    callback = function()
+        -- Toggle
+        Enabled_AutoClicker = not Enabled_AutoClicker
+        -- "Enabled_AutoClicker" Color
+        local NewColor = Color3.new(0, 1, 0)
+        if EnabledAutoClicker == false then
+            NewColor = Color3.new(1, 0, 0)
+        end
+        if NewColor ~= Last then
+            Last = NewColor
+            EnabledAutoClicker:SetColor(NewColor)
+        end
+        -- Click Position
+        if Enabled_AutoClicker then
+            -- Update Mouse Pos
+            X, Y = Mouse.X, Mouse.Y + 10
+            -- Update Box
+            Box_1:SetValue()
+        else
+            X, Y = 0, 0
+            Box_1:SetValue()
+        end
+        -- AutoClick
+        while Enabled_AutoClicker do
+            VirtualInputManager:SendMouseButtonEvent(X, Y, 0, true, game, 1)
+            VirtualInputManager:SendMouseButtonEvent(X, Y, 0, false, game, 1)
+            task.wait(Library.flags.Interval)
+        end
+    end
+})
+
+Window:AddSlider({
+    text = 'Interval',
+    min = 0.01,
+    max = 2,
+    value = 1,
+    float = 0.01
+})
+
+Box = Window:AddBox({
+    text = "AutoClick Position:",
+    value = "X: " .. X .. ", Y: " .. Y,
+    callback = function()
+        if tick()-LastU > 0.1 then
+            LastU = tick()
+            Box:SetValue("X: " .. X .. ", Y: " .. Y)
+        end
+    end
+})
+
+Library:Init()
